@@ -1,0 +1,21 @@
+// Yeni ozellikler demo
+
+tanimla kare(n):
+    dondur n * n
+
+tanimla artir(n):
+    dondur n + 1
+
+// Aralik operatoru
+toplam = 0
+her_biri_icin i icinde 1..=5:
+    toplam = toplam + i
+yazdir(f"1..=5 toplami: {toplam}")
+
+// Pipe operatoru
+sonuc = 3 |> kare |> artir
+yazdir(f"3 |> kare |> artir = {sonuc}")
+
+// Constant folding (derleme aninda hesaplanir)
+eger 2 + 3 > 4:
+    yazdir("folding calisti")

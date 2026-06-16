@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.kahc
+.kahin_cache/
+
+# Rust build artefactlari (kahin_rs.so kok dizinde precompiled tutulur)
+kahin_rs/target/
