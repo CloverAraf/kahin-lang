@@ -177,7 +177,15 @@ yazdir(f"İsim: {isim}, Yaş: {yas}")
 | `yanlis` | `False` | Yanlış değeri |
 | `hic` | `None` | Boş değer |
 | `ice_aktar` | `import` | Modül içe aktar |
+| `kaynaktan` | `from` | `kaynaktan os ice_aktar getcwd` |
 | `sinif` | `class` | Sınıf tanımla |
+| `ve` | `and` | Mantıksal ve |
+| `veya` | `or` | Mantıksal veya |
+| `degil` | `not` | Mantıksal değil |
+| `ozdes` | `is` | Kimlik kontrolü |
+| `lambda` | `lambda` | Anonim fonksiyon |
+| `kuresel` | `global` | Global değişken |
+| `yerel_degil` | `nonlocal` | Dış kapsam değişkeni |
 
 ---
 
@@ -243,9 +251,14 @@ yok_mu = yanlis     // False
 10 >= 10  // dogru
 10 <= 9   // yanlis
 
-// Mantıksal operatörler
+// Mantıksal operatörler (Türkçe ya da İngilizce çalışır)
+dogru ve dogru     // dogru
+dogru ve yanlis    // yanlis
+dogru veya yanlis  // dogru
+degil dogru        // yanlis
+
+// İngilizce karşılıkları da geçerli
 dogru and dogru    // dogru
-dogru and yanlis   // yanlis
 dogru or yanlis    // dogru
 not dogru          // yanlis
 ```
