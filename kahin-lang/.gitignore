@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.kahc
+.kahin_cache/
+
+# Rust build artefactlari (kahin_rs.so kok dizinde precompiled tutulur)
+kahin_rs/target/
+
+# Nuitka tek-binary ciktisi (build_nuitka.py uretir, repoya girmez)
+dist/
+build/
+*.build/
+*.dist/
+
+# Oturum transcriptleri
+*-local-command-caveat*.txt

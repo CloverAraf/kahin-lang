@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.kahc
+.kahin_cache/
+
+# Rust build artefactlari
+kahin_rs/target/
+
+# Nuitka tek-binary ciktisi
+dist/
+build/
+*.build/
+*.dist/
+
+*-local-command-caveat*.txt

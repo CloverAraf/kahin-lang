@@ -1,0 +1,127 @@
+// KAHİN v14.0 - TAM TÜRKÇE TEST DOSYASI
+// Tüm özellikler, tamamen Türkçe yazım
+
+yazdir("═" * 60)
+yazdir("🚀 KAHİN v14.0 - TAM TÜRKÇE PROGRAMLAMA DİLİ")
+yazdir("═" * 60)
+
+// 1. DEĞİŞKENLER VE VERİ TÜRLERİ
+yazdir("\n📦 1. Değişkenler ve Veri Türleri:")
+isim = "Ahmet"
+yas = 25
+boy = 1.75
+evli_mi = yanlis
+
+yazdir(f"  İsim: {isim} (tür: {tur(isim).__name__})")
+yazdir(f"  Yaş: {yas} (tür: {tur(yas).__name__})")
+yazdir(f"  Boy: {boy} (tür: {tur(boy).__name__})")
+yazdir(f"  Evli: {evli_mi} (tür: {tur(evli_mi).__name__})")
+
+// 2. KOŞUL YAPILARI
+yazdir("\n🔀 2. Koşul Yapıları:")
+sayi = 42
+
+eger sayi > 50:
+    yazdir("  Sayı 50'den büyük")
+degilse_eger sayi > 30:
+    yazdir("  Sayı 30-50 arası")
+degilse:
+    yazdir("  Sayı 30'dan küçük")
+
+// 3. DÖNGÜLER
+yazdir("\n🔄 3. Döngüler:")
+yazdir("  For döngüsü:")
+her_biri_icin i icinde aralik(5):
+    yazdir(f"    Sayı: {i}")
+
+yazdir("  While döngüsü:")
+sayac = 0
+dondu_boyunca sayac < 3:
+    yazdir(f"    Sayaç: {sayac}")
+    sayac = sayac + 1
+
+// 4. FONKSİYONLAR
+yazdir("\n⚙️ 4. Fonksiyonlar:")
+
+tanimla toplama(a, b):
+    dondur a + b
+
+tanimla carpma(x, y):
+    sonuc = x * y
+    dondur sonuc
+
+yazdir(f"  10 + 20 = {toplama(10, 20)}")
+yazdir(f"  5 * 8 = {carpma(5, 8)}")
+
+// 5. LİSTELER
+yazdir("\n📋 5. Listeler:")
+sayilar = [1, 2, 3, 4, 5]
+meyveler = ["elma", "armut", "çilek"]
+
+yazdir(f"  Sayılar: {sayilar}")
+yazdir(f"  Uzunluk: {uzunluk(sayilar)}")
+yazdir(f"  En büyük: {en_buyuk(sayilar)}")
+yazdir(f"  En küçük: {en_kucuk(sayilar)}")
+yazdir(f"  Toplam: {topla(sayilar)}")
+yazdir(f"  Meyveler: {meyveler}")
+
+// 6. SÖZLÜKLER
+yazdir("\n📖 6. Sözlükler:")
+kisi = sozluk()
+kisi["ad"] = "Mehmet"
+kisi["soyad"] = "Yılmaz"
+kisi["yas"] = 30
+
+yazdir(f"  Kişi: {kisi}")
+yazdir(f"  Ad: {kisi['ad']}")
+yazdir(f"  Yaş: {kisi['yas']}")
+
+// 7. MATEMATIKSEL İŞLEMLER
+yazdir("\n➕ 7. Matematiksel İşlemler:")
+a = 15
+b = 4
+
+yazdir(f"  {a} + {b} = {a + b}")
+yazdir(f"  {a} - {b} = {a - b}")
+yazdir(f"  {a} * {b} = {a * b}")
+yazdir(f"  {a} / {b} = {a / b:.2f}")
+yazdir(f"  {a} // {b} = {a // b} (tam bölme)")
+yazdir(f"  {a} % {b} = {a % b} (mod)")
+yazdir(f"  {a} ** 2 = {a ** 2} (üs)")
+
+// 8. METİN İŞLEMLERİ
+yazdir("\n📝 8. Metin İşlemleri:")
+mesaj = "Merhaba Dünya"
+yazdir(f"  Orijinal: {mesaj}")
+yazdir(f"  Büyük harf: {mesaj.upper()}")
+yazdir(f"  Küçük harf: {mesaj.lower()}")
+yazdir(f"  Uzunluk: {uzunluk(mesaj)}")
+yazdir(f"  Tekrar: {mesaj * 2}")
+
+// 9. MODÜL KULLANIMI
+yazdir("\n📦 9. Modül Kullanımı:")
+ice_aktar sys
+ice_aktar sistem as os
+
+yazdir(f"  Python versiyonu: {sys.version.split()[0]}")
+yazdir(f"  Platform: {sys.platform}")
+yazdir(f"  Çalışma dizini: {os.getcwd()}")
+
+// 10. HATA YAKALAMA
+yazdir("\n🛡️ 10. Hata Yakalama:")
+dene:
+    sonuc = 10 / 2
+    yazdir(f"  Başarılı: 10 / 2 = {sonuc}")
+yakala Exception as hata:
+    yazdir(f"  Hata oluştu: {hata}")
+
+dene:
+    hatali = 10 / 0
+yakala ZeroDivisionError:
+    yazdir("  ⚠️  Sıfıra bölme hatası yakalandı!")
+
+// SONUÇ
+yazdir("\n" + "═" * 60)
+yazdir("✅ TÜM TESTLER BAŞARILI!")
+yazdir("🚀 Kahin v14.0 - Tam Türkçe Programlama Dili")
+yazdir("═" * 60)

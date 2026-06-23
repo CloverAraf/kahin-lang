@@ -1,0 +1,38 @@
+// KAHİN HIZLI TEST
+
+yazdir("═" * 50)
+yazdir("KAHİN v14.0 - Tam Türkçe Test")
+yazdir("═" * 50)
+
+// Değişkenler
+isim = "Ahmet"
+yas = 25
+yazdir(f"İsim: {isim}, Yaş: {yas}")
+yazdir(f"Tür: {tur(yas)}")
+
+// Koşul
+sayi = 42
+eger sayi > 40:
+    yazdir("Sayı büyük!")
+degilse:
+    yazdir("Sayı küçük!")
+
+// Döngü
+her_biri_icin i icinde aralik(3):
+    yazdir(f"Sayı: {i}")
+
+// Fonksiyon
+tanimla toplama_yap(a, b):
+    dondur a + b
+
+sonuc = toplama_yap(10, 20)
+yazdir(f"10 + 20 = {sonuc}")
+
+// Liste
+sayilar = [1, 2, 3, 4, 5]
+yazdir(f"Liste: {sayilar}")
+yazdir(f"Uzunluk: {uzunluk(sayilar)}")
+yazdir(f"Toplam: {topla(sayilar)}")
+
+yazdir("═" * 50)
+yazdir("✅ TEST TAMAM!")

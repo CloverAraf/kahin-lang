@@ -1,0 +1,12 @@
+// async/await (asenkron/bekle)
+kaynaktan asyncio ice_aktar run, sleep
+
+asenkron tanimla selamla(ad):
+    bekle sleep(0.01)
+    dondur f"Merhaba {ad}"
+
+asenkron tanimla ana():
+    sonuc = bekle selamla("Kahin")
+    yazdir(sonuc)
+
+run(ana())

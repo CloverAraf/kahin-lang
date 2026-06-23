@@ -1,0 +1,46 @@
+// Yeni eklenen built-in fonksiyonlar
+
+// döngü/koleksiyon
+her_biri_icin i, ad icinde numarali(["Ada", "Can"]):
+    yazdir(f"{i}: {ad}")
+
+her_biri_icin a, b icinde birlikte([1, 2], ["x", "y"]):
+    yazdir(f"{a}-{b}")
+
+kareler = liste(esle(lambda x: x * x, [1, 2, 3]))
+yazdir(kareler)
+
+ciftler = liste(suz(lambda x: x % 2 == 0, aralik(1, 7)))
+yazdir(ciftler)
+
+yazdir(liste(tersten([1, 2, 3])))
+yazdir(herhangi([yanlis, dogru]))
+yazdir(tumu([dogru, dogru]))
+yazdir(yuvarla(3.14159, 2))
+yazdir(mantiksal(0), mantiksal(5))
+
+// refleksiyon/OOP
+sinif Hayvan:
+    tanimla __init__(self, ad):
+        self.ad = ad
+
+sinif Kedi(Hayvan):
+    tanimla __init__(self, ad):
+        ust_sinif().__init__(ad)
+
+k = Kedi("Tekir")
+yazdir(ornegi_mi(k, Hayvan))
+yazdir(niteligi_var(k, "ad"))
+yazdir(nitelik_al(k, "ad"))
+
+// sayı/karakter/biçim
+yazdir(karakter(65), karakter_kodu("A"))
+yazdir(onaltilik(255), ikilik(5), sekizlik(8))
+yazdir(bicimle(255, "x"))
+yazdir(bolum_kalan(17, 5))
+yazdir(us_al(2, 10))
+
+// yineleyici
+it = yineleyici([10, 20])
+yazdir(sonraki(it))
+yazdir(donmus_kume([1, 1, 2]))

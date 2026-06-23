@@ -1,0 +1,5 @@
+# .kahin dosyalari Python-grammar uyumlu; GitHub Python olarak renklendirmesi için
+*.kahin linguist-language=Python
+
+# kahin_rs.so binary; dil istatistiginden cikar
+*.so binary linguist-vendored

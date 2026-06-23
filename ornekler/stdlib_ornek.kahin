@@ -1,0 +1,14 @@
+// matematik + rastgele stdlib
+ice_aktar matematik
+ice_aktar rastgele
+
+yazdir("pi =", matematik.pi)
+yazdir("karekok(16) =", matematik.karekok(16))
+yazdir("faktoriyel(5) =", matematik.faktoriyel(5))
+yazdir("obeb(12, 18) =", matematik.obeb(12, 18))
+yazdir("tavan(3.2) =", matematik.tavan(3.2))
+
+rastgele.tohum(42)
+yazdir("sayi(1,6) =", rastgele.sayi(1, 6))
+yazdir("sec =", rastgele.sec(["a", "b", "c"]))
+yazdir("karistir =", rastgele.karistir([1, 2, 3, 4]))
