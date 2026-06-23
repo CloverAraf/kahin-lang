@@ -104,10 +104,6 @@ için dil yine çalışmaya devam ediyor.
 - `kahin_lib/` — Türkçe standart kütüphane (`dosya`, `veri`, `zaman`).
 - `kahin_rs/` — Rust ön-işleme kaynağı; derlenince `kahin_rs.so` çıkıyor.
 
-Repoda bunların dışında eski denemeler de var (Go varyantları, `kahin_binary.py`,
-`kahin_ultra_fast.py`, `kahin_transpiler.py`). Bunlar artık kullanılmıyor, aktif
-hat yukarıdaki dosyalar.
-
 ## Tek dosya binary
 
 `build_nuitka.py`, Nuitka ile her şeyi (Python motoru dahil) tek bir çalıştırılabilir
