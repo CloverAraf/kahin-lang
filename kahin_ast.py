@@ -350,11 +350,9 @@ class KahinParser:
         python_kod = self.lexer.tokens_to_code(tokens)
 
         # ADIM 3: Parse (CPython'un parser'ı)
-        try:
-            tree = ast.parse(python_kod, filename=dosya_adi, mode=mode)
-        except SyntaxError as e:
-            # Hata mesajını Türkçeleştir
-            raise SyntaxError(f"Sözdizimi hatası: {e}")
+        # SyntaxError olduğu gibi yükselir: lineno/offset korunur, çağıran (CLI)
+        # Türkçe önek + satır numarasını ekler.
+        tree = ast.parse(python_kod, filename=dosya_adi, mode=mode)
 
         # ADIM 4: Optimize (AST Transformer)
         if self.optimize and self.transformer:
