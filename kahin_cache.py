@@ -49,7 +49,7 @@ from typing import Optional, Any
 # Magic number - Kahin versiyonu
 # Her Kahin versiyonunda değiştir ki eski cache'ler geçersiz olsun
 KAHIN_MAGIC = b'KAHN'  # 4 byte
-KAHIN_VERSION = 14  # v14.0
+KAHIN_VERSION = 16  # v16.0
 
 # Cache dizini
 CACHE_DIR = Path.home() / ".kahin_cache"
@@ -72,15 +72,13 @@ class KahinCache:
 
     def _get_cache_path(self, kaynak_dosya: str) -> Path:
         """
-        Kaynak dosya için cache dosyası yolu
-
-        Örnek:
-            program.kahin → __kahin_cache__/program.kahc
+        Kaynak dosya için cache dosyası yolu.
+        Anahtar = tam yol hash'i; farklı dizinlerdeki aynı adlı dosyalar çakışmaz.
         """
-        kaynak_path = Path(kaynak_dosya)
-        dosya_adi = kaynak_path.stem  # Uzantısız isim
-        cache_dosya = f"{dosya_adi}.kahc"
-        return self.cache_dir / cache_dosya
+        tam_yol = os.path.abspath(kaynak_dosya)
+        yol_hash = hashlib.md5(tam_yol.encode('utf-8')).hexdigest()[:12]
+        dosya_adi = Path(kaynak_dosya).stem
+        return self.cache_dir / f"{dosya_adi}.{yol_hash}.kahc"
 
     def _get_source_hash(self, kaynak_dosya: str) -> bytes:
         """
