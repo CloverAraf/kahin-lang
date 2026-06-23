@@ -1,0 +1,32 @@
+// match/case (eslestir/desen) örneği
+
+tanimla acikla(durum):
+    eslestir durum:
+        desen 200:
+            dondur "Tamam"
+        desen 404:
+            dondur "Bulunamadi"
+        desen 500 | 502 | 503:
+            dondur "Sunucu hatasi"
+        desen _:
+            dondur "Bilinmeyen"
+
+her_biri_icin kod icinde [200, 404, 500, 999]:
+    yazdir(f"{kod}: {acikla(kod)}")
+
+// capture + guard
+tanimla nokta_tipi(n):
+    eslestir n:
+        desen (0, 0):
+            dondur "merkez"
+        desen (x, 0):
+            dondur f"x ekseni: {x}"
+        desen (0, y):
+            dondur f"y ekseni: {y}"
+        desen (x, y) eger x == y:
+            dondur f"kosegen: {x}"
+        desen (x, y):
+            dondur f"nokta: {x},{y}"
+
+her_biri_icin p icinde [(0, 0), (5, 0), (0, 3), (4, 4), (2, 7)]:
+    yazdir(nokta_tipi(p))

@@ -80,7 +80,7 @@ KEYWORD_MAP = {
     'olumla': 'assert', 'dogru': 'True', 'yanlis': 'False',
     'hic': 'None', 'sinif': 'class', 'sil': 'del',
     'kuresel': 'global', 'yerel_degil': 'nonlocal', 'lambda': 'lambda',
-    'as': 'as',
+    'as': 'as', 'eslestir': 'match', 'desen': 'case',
 
     # Built-ins
     'yazdir': 'print', 'girdi': 'input', 'uzunluk': 'len',
@@ -91,8 +91,8 @@ KEYWORD_MAP = {
     'ac': 'open', 'topla': 'sum', 'en_buyuk': 'max',
     'en_kucuk': 'min', 'bekle': 'input',
 
-    # Modüller
-    'sistem': 'os', 'zaman': 'time', 'istek': 'requests', 'arayuz': 'sys',
+    # Modüller (not: 'zaman' kaldırıldı — kahin_lib/zaman.py wrapper'ı için)
+    'sistem': 'os', 'istek': 'requests', 'arayuz': 'sys',
 }
 
 
@@ -182,17 +182,20 @@ class KahinLexer:
             # Byte stream oluştur
             byte_stream = io.BytesIO(kaynak_kod.encode('utf-8'))
 
-            # Tokenize et (CPython'un C implementasyonu)
             for tok in tokenize.tokenize(byte_stream.readline):
-                # Token tipini al
                 tok_type = tok.type
                 tok_string = tok.string
 
-                # NAME token ise ve Türkçe keyword ise çevir
+                # Çeviriyi sadece NAME token'larında yapıyoruz. String ya da
+                # yorum içinde 'eger' geçerse ona dokunmamak için tip kontrolü
+                # şart — yoksa "eger yaz" gibi bir metin de bozulurdu.
                 if tok_type == token.NAME and tok_string in KEYWORD_MAP:
                     tok_string = KEYWORD_MAP[tok_string]
 
-                # KahinToken oluştur
+                # start/end/line'ı orijinal token'dan aynen taşıyoruz. Metni
+                # değiştiriyoruz ama konumu değil; böylece untokenize sonrası
+                # satır numaraları kaymıyor ve hata mesajları .kahin dosyasının
+                # doğru satırını gösteriyor.
                 kahin_tok = KahinToken(
                     type=tok_type,
                     string=tok_string,
@@ -204,6 +207,10 @@ class KahinLexer:
                 tokens.append(kahin_tok)
 
         except tokenize.TokenError as e:
+            # tokenize yarım kalmış blokta (ör. kapanmamış parantez) TokenError
+            # atıyor. SyntaxError'a çeviriyoruz ki üst katman tek tip hatayla
+            # uğraşsın — REPL bunu "devam et, daha fazla satır bekliyorum"
+            # sinyali olarak da kullanıyor.
             raise SyntaxError(f"Lexer hatası: {e}")
 
         self.tokens = tokens
@@ -223,8 +230,13 @@ class KahinLexer:
         Rust modülü (kahin_rs) varsa tek geçişte orada yapılır; yoksa
         Python regex hattına düşülür. Çıktı eşittir.
         """
+        # Rust derlenmişse tüm ön-işlemeyi tek geçişte o yapıyor, çıktı bu
+        # Python hattıyla birebir aynı. .so yoksa aşağıdaki regex yedeği
+        # devreye giriyor — daha yavaş ama sonuç değişmiyor.
         if _kahin_rs is not None:
             return _kahin_rs.to_python(kod)
+        # Sıra önemli: önce yorumları çevir, sonra aralık, sonra pipe. Her adım
+        # string/yorum içeriğini koruyarak çalışıyor (_koruyarak_uygula).
         kod = self._yorum_cevir(kod)
         kod = self._koruyarak_uygula(kod, self._aralik_cevir)
         kod = self._koruyarak_uygula(kod, self._pipe_cevir)
@@ -247,13 +259,18 @@ class KahinLexer:
         String ve yorumları placeholder ile koru, donustur(kod) uygula, geri yükle.
         donustur: sadece kod-segmentlerine uygulanan fonksiyon.
         """
+        # Fikir şu: dönüşümü uygulamadan önce string ve yorumları metinden
+        # söküp yerlerine \x00N\x00 gibi bir nöbetçi koyuyoruz. \x00 (NUL)
+        # seçildi çünkü normal kaynak kodda asla geçmez, yani karışma riski yok.
+        # Dönüşüm sadece geri kalan "temiz kod" üstünde çalışıyor, sonra
+        # nöbetçileri orijinal parçalarla değiştiriyoruz. Böylece "1..10"
+        # literali aralık sanılıp bozulmuyor.
         sakli = []
 
         def sakla(m):
             sakli.append(m.group(0))
             return f"\x00{len(sakli) - 1}\x00"
 
-        # f-string, normal string, yorum — sırayla korunur
         korunmus = re.sub(r'f"[^"]*"|f\'[^\']*\'|"[^"]*"|\'[^\']*\'|#[^\n]*', sakla, kod)
         donusen = donustur(korunmus)
         for i, parca in enumerate(sakli):
@@ -448,3 +465,8 @@ tanimla fonksiyon_{i}(x):
 if __name__ == "__main__":
     test_lexer()
     benchmark_lexer()
+
+
+
+
+

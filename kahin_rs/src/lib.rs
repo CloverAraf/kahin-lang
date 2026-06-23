@@ -24,6 +24,7 @@ fn keyword(tr: &str) -> Option<&'static str> {
         "dogru" => "True", "yanlis" => "False", "hic" => "None",
         "sinif" => "class", "sil" => "del", "kuresel" => "global",
         "yerel_degil" => "nonlocal", "lambda" => "lambda",
+        "eslestir" => "match", "desen" => "case",
         "yazdir" => "print", "girdi" => "input", "uzunluk" => "len",
         "aralik" => "range", "tam_sayi" => "int", "metin" => "str",
         "ondalik" => "float", "liste" => "list", "sozluk" => "dict",
@@ -31,13 +32,16 @@ fn keyword(tr: &str) -> Option<&'static str> {
         "yardim" => "help", "mutlak" => "abs", "sirala" => "sorted",
         "ac" => "open", "topla" => "sum", "en_buyuk" => "max",
         "en_kucuk" => "min", "bekle" => "input",
-        "sistem" => "os", "zaman" => "time", "istek" => "requests",
+        "sistem" => "os", "istek" => "requests",
         "arayuz" => "sys",
         _ => return None,
     })
 }
 
-// Token: kod-segmenti tek geçişte taranır, string/yorum aynen geçer.
+// Tüm tasarımın özü bu enum'da: kaynağı parçalara ayırırken hangi parçanın
+// "kod" hangisinin "dokunulmaz metin" olduğunu tipiyle işaretliyoruz. Str ve
+// Comment çevrilmeden aynen geçer; Word/Range/Pipe ise çevrime tabi. Bu ayrım
+// olmadan `"1..10"` literali ile gerçek `1..10` aralığını ayırt edemezdik.
 #[derive(Debug, Clone)]
 enum Tok {
     // kod parçaları (keyword çevrilebilir, range/pipe burada)
@@ -104,7 +108,9 @@ impl Lexer {
             if c.is_ascii_digit() {
                 let mut s = String::new();
                 while let Some(ch) = self.peek() {
-                    // 1..10 içindeki .. sayıya dahil DEĞİL
+                    // Burası ince: `1..10` okurken nokta görünce durmalıyız,
+                    // yoksa "1." diye ondalık sayı sanıp aralığı yiyebiliriz.
+                    // İki nokta peş peşeyse bu bir aralık operatörü, sayı değil.
                     if ch == '.' && self.peek2() == Some('.') { break; }
                     if ch.is_ascii_digit() || ch == '.' || ch == '_' {
                         s.push(ch);
@@ -193,7 +199,10 @@ impl Lexer {
     }
 }
 
-// // -> # (sadece satır başındaki, mevcut Python davranışıyla aynı: lstrip sonrası //)
+// // -> # ama yalnızca satırın ilk anlamlı karakteri //' ise. Satır ortasındaki
+// //'a dokunmuyorum bilerek: `x = a // b` Python'da tam bölme operatörü, onu
+// yorum sanıp # yaparsam kodu öldürürüm. lstrip sonrası bakmak Python tarafıyla
+// birebir aynı davranış.
 fn yorum_cevir(src: &str) -> String {
     let mut out = String::with_capacity(src.len());
     for (i, line) in src.split('\n').enumerate() {
@@ -211,8 +220,9 @@ fn yorum_cevir(src: &str) -> String {
     out
 }
 
-// Token akışını Python kaynağına yaz. Range + keyword burada.
-// Pipe satır bazlı işlendiği için önce satırlara böleriz.
+// Token akışını Python kaynağına yaz. Pipe dönüşümü tek bir satırın tamamını
+// görmek zorunda (x |> f |> g hepsi aynı satırda), bu yüzden önce Newline'lara
+// göre satırlara bölüp her satırı kendi içinde işliyorum.
 fn emit(tokens: &[Tok]) -> String {
     // satırlara böl (Newline ayır)
     let mut lines: Vec<Vec<Tok>> = vec![Vec::new()];
@@ -239,7 +249,10 @@ fn emit_line(line: &[Tok]) -> String {
     rewrite_pipe(line)
 }
 
-// Range token'ı range(a, b) yapmak için sol/sağ komşu gerekir → token seviyesinde işle.
+// `1..10` gibi bir aralığı `range(1, 10)`'a çevirmek için sadece range
+// token'ına bakmak yetmiyor: solundaki ve sağındaki operand'ı da bilmem
+// gerekiyor. Bu yüzden iş regex'le değil token dizisi üzerinde yapılıyor —
+// komşulara ancak burada erişebiliyoruz.
 fn lower_with_range(line: &[Tok]) -> Vec<String> {
     // önce her token'ı string'e indir (range hariç placeholder)
     let strs: Vec<String> = line.iter().map(|t| match t {
@@ -302,10 +315,13 @@ fn is_ws(t: &Tok) -> bool {
 
 // pipe satırı yeniden yaz: x |> f |> g  ->  g(f(x))
 fn rewrite_pipe(line: &[Tok]) -> String {
-    // range önce çözülmüş düz parça dizisini al, sonra |> token'ına göre böl.
+    // Range'i pipe'tan önce çözüyorum ki `1..10 |> topla` gibi bir satırda
+    // aralık zaten range(...) olmuş halde gelsin; aksi halde |> böldükten
+    // sonra komşu bilgisi dağılır ve range'i çözemezdim.
     let lowered = lower_with_range(line);
-    // pipe pozisyonlarını lowered üstünde işaretle: lowered[i] == "|>"
-    // depth-0 segmentlere böl
+    // Segmentlere ayırırken parantez derinliğini sayıyorum: yalnızca depth==0
+    // konumdaki |> gerçek pipe. f(a |> b) içindeki bir |> olsa (ki şu an yok)
+    // bölme noktası sayılmamalı — bu yüzden depth kontrolü.
     let mut segs: Vec<String> = Vec::new();
     let mut cur = String::new();
     let mut depth: i32 = 0;
@@ -330,7 +346,10 @@ fn rewrite_pipe(line: &[Tok]) -> String {
         return lowered.concat();
     }
 
-    // önek koru: ilk segmentte "x = " veya "return "/"yield " gibi atama önekini ayır
+    // İlk segmentteki "x = " veya "return " önekini gövdeden ayırıyorum.
+    // Çünkü zincir `f(g(x))` haline gelirken bu önek en dışta kalmalı:
+    // `sonuc = veri |> temizle` → `sonuc = temizle(veri)`, `temizle(sonuc = veri)`
+    // değil. Önek ayrılmazsa atama yanlış yere gömülürdü.
     let first = segs[0].clone();
     let (prefix, mut expr) = split_prefix(&first);
     expr = expr.trim().to_string();
@@ -357,7 +376,10 @@ fn split_prefix(s: &str) -> (String, String) {
     // indent
     let indent_len = s.len() - s.trim_start().len();
     let (indent, rest) = s.split_at(indent_len);
-    // atama: ilk top-level '=' (==, <=, >= değil)
+    // İlk top-level '=' atama işareti. Ama ==, <=, >=, != karşılaştırma —
+    // onları atama sanmamak için bir önceki/sonraki karaktere bakıyorum.
+    // Parantez içindeyken (depth>0) görülen '=' de keyword argümanı olabilir,
+    // o yüzden sadece depth==0'da atama kabul ediyorum.
     let bytes: Vec<char> = rest.chars().collect();
     let mut depth = 0;
     for i in 0..bytes.len() {
@@ -386,8 +408,11 @@ fn split_prefix(s: &str) -> (String, String) {
     (indent.to_string(), rest.to_string())
 }
 
-// f-string içindeki {...} bloklarındaki Türkçe kelimeleri çevir.
-// f-prefix yoksa string aynen döner. {{ }} kaçışları korunur.
+// f-string özel durum: stringin gövdesine dokunulmaz ama `{...}` içi gerçek
+// kod, oradaki Türkçe keyword'ler de çevrilmeli. Yani f"{eger}" değil ama
+// f"sonuc: {topla(a, b)}" içindeki ifadeyi çevirmem lazım. {{ ve }} ise
+// kaçış — onları ayraç sanıp içine girersem string'i bozarım, o yüzden
+// çift süslüyü atlıyorum.
 fn fstring_cevir(s: &str) -> String {
     let is_f = s.starts_with("f\"") || s.starts_with("f'")
         || s.starts_with("rf") || s.starts_with("fr")
