@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Kahin tek-binarry derleme (Nuitka onefile)
-Çıktı: dist/kahin tek dosya, python kurulu olmayan makinede çalışır
+Cıktı: dist/kahin tek dosya, python kurulu olmayan makinede çalışır
 kahin_lib - kahin_rs rust hızlandırıcı gömülür
 Gereksinim: pip install --user --break-system-packages nuitka, gcc, patchelf
 """
